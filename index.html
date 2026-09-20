@@ -381,6 +381,8 @@
   .hud-block { background: rgba(255,253,245,.92); border: 2px solid rgba(24,49,74,.1); border-radius: 16px; box-shadow: 0 4px 0 rgba(24,49,74,.17); min-width: 76px; color: var(--navy); }
   .hud-label { font-family: 'Nunito Sans', sans-serif; color: #477086; opacity: 1; letter-spacing: .08em; }
   #comboBadge { background: #fff4ba; color: #a85520; border: 2px solid #f3c74b; box-shadow: 0 3px 0 #d9aa28; padding: 5px 11px; top: 69px; z-index: 8; }
+  #fitGuide { position: absolute; top: 69px; right: 14px; z-index: 8; background: #18314a; color: white; border: 2px solid rgba(255,255,255,.65); border-radius: 12px; box-shadow: 0 3px 0 rgba(24,49,74,.2); padding: 5px 8px; font-size: .55rem; letter-spacing: .04em; }
+  #fitGuide.ready { background: #287d45; }
 
   #field { margin: 0 8px; width: calc(100% - 16px); border: 2px solid rgba(24,49,74,.15); border-radius: 24px 24px 18px 18px; background: linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.02)); }
   .game-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
@@ -395,6 +397,10 @@
 
   .item { width: 74px; height: 78px; border-radius: 20px; background: rgba(255,253,245,.9); border: 2px solid rgba(24,49,74,.12); box-shadow: 0 7px 0 rgba(24,49,74,.2), 0 12px 16px rgba(24,49,74,.12); padding: 3px 2px 4px; justify-content: flex-start; gap: 0; backdrop-filter: blur(2px); }
   .item.active { box-shadow: 0 0 0 3px #f9b83c, 0 7px 0 rgba(24,49,74,.2), 0 12px 16px rgba(24,49,74,.12); }
+  .item.fitted { box-shadow: 0 0 0 4px #52c66b, 0 7px 0 rgba(24,49,74,.2), 0 12px 16px rgba(24,49,74,.12); }
+  .item.shape-notch { clip-path: polygon(14% 0, 86% 0, 100% 20%, 86% 50%, 100% 80%, 86% 100%, 14% 100%, 0 80%, 14% 50%, 0 20%); }
+  .item.shape-diamond { clip-path: polygon(50% 0, 100% 24%, 82% 100%, 18% 100%, 0 24%); }
+  .item.shape-capsule { border-radius: 38px; }
   .item-art { display: block; width: 56px; height: 52px; object-fit: contain; }
   .item-label { font-family: 'Nunito Sans', sans-serif; font-size: 8px; font-weight: 900; color: #264258; max-width: 67px; margin-top: 0; }
   .art-outline { fill: none; stroke: #18314a; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
@@ -425,7 +431,7 @@
   <!-- START SCREEN -->
   <div class="screen" id="startScreen">
     <h1 class="title">SORT <span>RUSH</span></h1>
-    <p class="subtitle start-copy">Trash is falling. Move it into the right bin before it hits the creek. One minute. Don't pollute.</p>
+    <p class="subtitle start-copy">Start with simple sorting, then rotate each shaped piece until it fits its target bin. Keep the creek clean.</p>
     <div class="legend">
       <div class="legend-item"><span class="legend-dot" style="background:var(--landfill)"></span>Landfill</div>
       <div class="legend-item"><span class="legend-dot" style="background:var(--recycling)"></span>Recycling</div>
@@ -444,6 +450,7 @@
       <div class="hud-block"><span class="hud-label">CREEK</span><span id="missVal">0/6</span></div>
     </div>
     <div id="comboBadge">Combo x1</div>
+    <div id="fitGuide" class="hidden" aria-live="polite"></div>
     <div id="field">
       <div class="game-scene" aria-hidden="true">
         <div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div>
@@ -458,7 +465,7 @@
     <div id="creek"><div class="muck" id="muck"></div><span id="creek-label">THE CREEK</span></div>
     <div id="controls">
       <button class="ctrl-btn" id="btnLeft" aria-label="Move left">◀</button>
-      <button class="ctrl-btn" id="btnRotate" aria-label="Spin item">⟳</button>
+      <button class="ctrl-btn" id="btnRotate" aria-label="Rotate item to fit">⟳</button>
       <button class="ctrl-btn" id="btnRight" aria-label="Move right">▶</button>
     </div>
   </div>
@@ -508,6 +515,7 @@
   const missVal = document.getElementById('missVal');
   const muck = document.getElementById('muck');
   const comboBadge = document.getElementById('comboBadge');
+  const fitGuide = document.getElementById('fitGuide');
   const bins = Array.from(document.querySelectorAll('.bin'));
 
   const GAME_LENGTH = 60; // seconds
@@ -539,6 +547,40 @@
     return laneW * laneIndex + laneW/2;
   }
 
+  function difficultyFor(elapsed){
+    if (elapsed < 15) return { speed: 42, spawnInterval: 4.2, rotationChance: 0 };
+    if (elapsed < 35) return { speed: 54, spawnInterval: 3.0, rotationChance: 0.45 };
+    return { speed: Math.min(84, 66 + (elapsed - 35) * 0.8), spawnInterval: Math.max(1.15, 2.3 - (elapsed - 35) * 0.035), rotationChance: 0.8 };
+  }
+
+  function fitRotationFor(elapsed){
+    const difficulty = difficultyFor(elapsed);
+    if (Math.random() >= difficulty.rotationChance) return 0;
+    return [90, 180, 270][Math.floor(Math.random() * 3)];
+  }
+
+  function shapeFor(type){
+    if (['can', 'battery', 'phone', 'cup'].includes(type)) return 'capsule';
+    if (['box', 'paper', 'pizza', 'wrapper'].includes(type)) return 'notch';
+    if (['banana', 'cable', 'bandage', 'eggshell'].includes(type)) return 'diamond';
+    return 'square';
+  }
+
+  function updateFitGuide(item){
+    if (!item || item.fitRotation === 0) { fitGuide.classList.add('hidden'); return; }
+    const arrows = { 90: '→', 180: '↓', 270: '←' };
+    const fitted = item.rotation % 360 === item.fitRotation;
+    fitGuide.textContent = fitted ? 'FIT READY ✓' : 'TURN ' + arrows[item.fitRotation];
+    fitGuide.classList.toggle('ready', fitted);
+    fitGuide.classList.remove('hidden');
+  }
+
+  function setFitState(item){
+    const fitted = item.rotation % 360 === item.fitRotation;
+    item.el.classList.toggle('fitted', fitted && item.fitRotation !== 0);
+    if (state.activeItem === item) updateFitGuide(item);
+  }
+
   function itemArtwork(type){
     return '<img class="item-art" src="assets/items/' + type + '.png" alt="" draggable="false">';
 
@@ -568,6 +610,7 @@
 
   function spawnItem(){
     const t = state.elapsed;
+    const difficulty = difficultyFor(t);
     let pool = ITEMS;
     // weight tricky items more as time goes on
     if (t > 30) {
@@ -577,24 +620,27 @@
     const lane = Math.floor(Math.random()*4);
     const el = document.createElement('div');
     el.className = 'item active';
+    el.classList.add('shape-' + shapeFor(def.type));
     el.innerHTML = itemArtwork(def.type) + '<div class="item-label">'+def.label+'</div>';
     field.appendChild(el);
 
     // deactivate previous active item visually
     if (state.activeItem) state.activeItem.el.classList.remove('active');
 
-    const speedBase = 46; // px/sec baseline
-    const speed = speedBase + Math.min(t, 60) * 1.6; // ramps up over the minute
+    const fitRotation = fitRotationFor(t);
+    const rotation = fitRotation === 0 ? 0 : [0, 90, 180, 270][Math.floor(Math.random() * 4)];
 
     const itemObj = {
       el, def, lane,
       y: -ITEM_SIZE,
-      speed,
-      rotation: 0,
+      speed: difficulty.speed,
+      rotation,
+      fitRotation,
       landed: false,
     };
     state.items.push(itemObj);
     state.activeItem = itemObj;
+    setFitState(itemObj);
     positionItem(itemObj);
   }
 
@@ -615,6 +661,7 @@
   function rotateActive(){
     if (!state.activeItem) return;
     state.activeItem.rotation += 90;
+    setFitState(state.activeItem);
     positionItem(state.activeItem);
   }
 
@@ -641,9 +688,9 @@
     setTimeout(()=> el.remove(), 720);
   }
 
-  function landItem(item, correct){
+  function landItem(item, correct, missText = 'MISS'){
     item.landed = true;
-    if (state.activeItem === item) state.activeItem = null;
+    if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); }
     flashBin(LANES[item.lane], correct);
     if (correct) {
       state.combo++;
@@ -657,7 +704,7 @@
       state.combo = 0;
       comboBadge.style.opacity = '0';
       state.misses++;
-      floatScoreText(laneCenterX(item.lane)-16, fieldHeight()-40, 'MISS', '#D64545');
+      floatScoreText(laneCenterX(item.lane)-16, fieldHeight()-40, missText, '#D64545');
       updateCreek();
     }
     updateHud();
@@ -699,7 +746,7 @@
     }
 
     // dynamic spawn interval: gets faster over time
-    const targetInterval = Math.max(0.9, 2.4 - state.elapsed * 0.025);
+    const targetInterval = difficultyFor(state.elapsed).spawnInterval;
     if (state.elapsed - state.lastSpawn > targetInterval) {
       spawnItem();
       state.lastSpawn = state.elapsed;
@@ -711,8 +758,10 @@
       item.y += item.speed * dt;
       positionItem(item);
       if (item.y + ITEM_SIZE >= binTop) {
-        const correct = LANES[item.lane] === item.def.bin;
-        landItem(item, correct);
+        const matchesBin = LANES[item.lane] === item.def.bin;
+        const isFitted = item.rotation % 360 === item.fitRotation;
+        const correct = matchesBin && isFitted;
+        landItem(item, correct, matchesBin ? 'TURN' : 'MISS');
       }
     });
 
@@ -725,6 +774,8 @@
     muck.style.height = '0%';
     document.getElementById('creek').style.background = 'var(--creek-clean)';
     comboBadge.style.opacity = '0';
+    fitGuide.classList.add('hidden');
+    fitGuide.classList.remove('ready');
     updateHud();
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
