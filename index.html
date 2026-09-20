@@ -368,9 +368,11 @@
   h1.title span { color: #eb5a3c; }
   .screen { gap: 16px; }
   #startScreen::before { content: 'CREEK RANGER EDITION'; color: #176580; background: rgba(255,255,255,.72); border: 2px solid rgba(23,101,128,.16); border-radius: 999px; padding: 6px 12px; font-size: .64rem; font-weight: 900; letter-spacing: .1em; }
-  .subtitle { color: #24475d; opacity: 1; line-height: 1.45; }
+  .subtitle { color: #18314a; opacity: 1; line-height: 1.45; font-weight: 800; }
+  .start-copy { background: rgba(255,253,245,.78); border: 2px solid rgba(24,49,74,.12); border-radius: 18px; box-shadow: 0 3px 0 rgba(24,49,74,.12); padding: 10px 14px; text-shadow: 0 1px rgba(255,255,255,.9); }
+  .control-hint { font-size: .86rem !important; font-weight: 900; max-width: 350px; text-shadow: 0 1px rgba(255,255,255,.85); }
   .legend { max-width: 360px; gap: 9px; }
-  .legend-item { border: 2px solid rgba(24,49,74,.08); border-radius: 16px; box-shadow: 0 5px 0 rgba(24,49,74,.13); color: #264258; }
+  .legend-item { background: #263848; border: 2px solid rgba(255,255,255,.2); border-radius: 16px; box-shadow: 0 5px 0 rgba(24,49,74,.24); color: #f7fbff; font-size: .86rem; font-weight: 900; text-shadow: 0 2px 2px rgba(0,0,0,.45); }
   .legend-dot { box-shadow: inset 0 -3px 0 rgba(0,0,0,.14), 0 0 0 2px rgba(255,255,255,.65); }
   button.big-btn { background: #ec5a3b; box-shadow: 0 6px 0 #a93a2a; border: 2px solid rgba(255,255,255,.72); border-radius: 18px; font-size: 1rem; letter-spacing: .04em; padding: 16px 34px; }
   button.big-btn:active { box-shadow: 0 2px 0 #a93a2a; }
@@ -423,7 +425,7 @@
   <!-- START SCREEN -->
   <div class="screen" id="startScreen">
     <h1 class="title">SORT <span>RUSH</span></h1>
-    <p class="subtitle">Trash is falling. Move it into the right bin before it hits the creek. One minute. Don't pollute.</p>
+    <p class="subtitle start-copy">Trash is falling. Move it into the right bin before it hits the creek. One minute. Don't pollute.</p>
     <div class="legend">
       <div class="legend-item"><span class="legend-dot" style="background:var(--landfill)"></span>Landfill</div>
       <div class="legend-item"><span class="legend-dot" style="background:var(--recycling)"></span>Recycling</div>
@@ -431,7 +433,7 @@
       <div class="legend-item"><span class="legend-dot" style="background:var(--electronic)"></span>Electronic</div>
     </div>
     <button class="big-btn" id="startBtn">START</button>
-    <p class="subtitle" style="font-size:0.75rem;">Tap a bin, or use ← → and space to drop. ↑ spins for fun.</p>
+    <p class="subtitle control-hint">Tap a bin, or use ← → and space to drop. ↑ spins for fun.</p>
   </div>
 
   <!-- GAME SCREEN -->
