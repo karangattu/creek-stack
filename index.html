@@ -469,6 +469,89 @@
   }
   .item { touch-action: none; }
   #field { touch-action: pan-y; }
+  /* ---------- Intuitive controls + visual clarity + game feel ---------- */
+  .bin { min-height: 100px; font-size: .66rem; padding-top: 19px; }
+  .hud-icon-btn {
+    background: rgba(255,253,245,.92); border: 2px solid rgba(24,49,74,.1);
+    border-radius: 12px; box-shadow: 0 4px 0 rgba(24,49,74,.17);
+    font-size: 1rem; min-width: 44px; min-height: 44px; cursor: pointer; color: #24475d;
+  }
+  .hud-icon-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(24,49,74,.17); }
+  #timeBarWrap {
+    width: 100%; height: 8px; padding: 0 14px 2px; z-index: 5;
+  }
+  #timeBarTrack { height: 8px; border-radius: 99px; background: rgba(24,49,74,.15); overflow: hidden; }
+  #timeBar { height: 100%; width: 100%; border-radius: 99px; background: linear-gradient(90deg, #52c66b, #a7d477); transition: width .2s linear; }
+  #timeBar.low { background: linear-gradient(90deg, #e9553f, #f3a74b); }
+  #laneGuide {
+    position: absolute; top: 0; bottom: 0; width: 25%; left: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,220,102,.30));
+    border-left: 2px dashed rgba(24,49,74,.18); border-right: 2px dashed rgba(24,49,74,.18);
+    pointer-events: none; z-index: 1; transition: left .12s ease; border-radius: 6px;
+  }
+  #dropGhost {
+    position: absolute; bottom: 4px; width: 60px; height: 18px; border-radius: 8px;
+    background: rgba(255,255,255,.55); border: 2px dashed rgba(24,49,74,.35);
+    pointer-events: none; z-index: 2; transform: translateX(-50%); transition: left .12s ease;
+  }
+  #dropGhost.ready { background: rgba(82,198,107,.5); border-color: #287d45; border-style: solid; }
+  .bin.hint-good { outline: 4px solid #52c66b; outline-offset: 2px; transform: translateY(-3px); }
+  .bin.hint-wrong { outline: 4px solid rgba(217,69,69,.75); outline-offset: 2px; }
+  .item.fitted { animation: fitPulse .8s ease-in-out infinite; }
+  @keyframes fitPulse {
+    0%, 100% { box-shadow: 0 0 0 4px #52c66b, 0 7px 0 rgba(24,49,74,.2); }
+    50% { box-shadow: 0 0 0 7px rgba(82,198,107,.65), 0 7px 0 rgba(24,49,74,.2); }
+  }
+  .spin-badge {
+    position: absolute; top: -10px; right: -10px; z-index: 4;
+    background: #18314a; color: #ffdc66; font-family: 'Bungee', cursive;
+    font-size: .62rem; border-radius: 999px; padding: 3px 8px;
+    border: 2px solid rgba(255,255,255,.7); box-shadow: 0 2px 0 rgba(24,49,74,.3);
+    pointer-events: none;
+  }
+  .spin-badge.done { background: #287d45; color: #fff; }
+  #pauseOverlay {
+    position: absolute; inset: 0; z-index: 40; display: flex; align-items: center;
+    justify-content: center; background: rgba(24,49,74,.6); padding: 22px;
+  }
+  #pauseOverlay.hidden { display: none !important; }
+  #pauseCard {
+    background: var(--paper); border-radius: 22px; padding: 24px 22px; max-width: 300px;
+    width: 100%; text-align: center; border: 2px solid rgba(24,49,74,.12);
+    box-shadow: 0 10px 0 rgba(24,49,74,.25);
+  }
+  #pauseCard h2 { font-family: 'Bungee', cursive; margin: 0 0 12px; color: var(--navy); }
+  #pauseCard .ctrl-btn { width: 100%; margin-top: 8px; font-size: 1rem; min-height: 52px; }
+  #bestLine {
+    font-weight: 900; font-size: .8rem; color: #176580; background: rgba(255,255,255,.72);
+    border: 2px solid rgba(23,101,128,.16); border-radius: 999px; padding: 6px 14px;
+  }
+  #app.shake { animation: appShake .3s ease; }
+  @keyframes appShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-3px); }
+  }
+  #creek::after {
+    content: ''; position: absolute; top: 3px; left: -40%; width: 60%; height: 6px; border-radius: 99px;
+    background: rgba(255,255,255,.5); animation: creekShimmer 3.2s ease-in-out infinite;
+  }
+  @keyframes creekShimmer { 0% { left: -40%; } 100% { left: 110%; } }
+  .confetti-bit {
+    position: absolute; top: -12px; width: 9px; height: 13px; border-radius: 2px;
+    z-index: 50; pointer-events: none; animation: confettiFall 1.8s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(420px) rotate(540deg); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .item.fitted { animation: none; }
+    #app.shake { animation: none; }
+    #creek::after { animation: none; display: none; }
+    .confetti-bit { animation-duration: .01s; }
+  }
   @media (min-width: 600px) { #app { height: min(94vh, 880px); border-radius: 30px; box-shadow: 0 20px 70px rgba(24,49,74,.27); border: 8px solid rgba(255,255,255,.7); } }
 </style>
 </head>
@@ -487,6 +570,7 @@
     </div>
     <button class="big-btn" id="startBtn">START</button>
     <button class="btn-secondary" id="howBtn">HOW TO PLAY</button>
+    <div id="bestLine">BEST: 0</div>
     <p class="subtitle control-hint">Tap a bin, or use ← → and space to drop. ↑ spins for fun.</p>
   </div>
 
@@ -495,8 +579,11 @@
     <div id="hud" style="width:100%;">
       <div class="hud-block"><span class="hud-label">SCORE</span><span id="scoreVal" aria-live="polite" aria-atomic="true">0</span></div>
       <div class="hud-block"><span class="hud-label">TIME</span><span id="timeVal">60</span></div>
-      <div class="hud-block"><span class="hud-label">CREEK</span><span id="missVal">0/6</span></div>
+      <div class="hud-block"><span class="hud-label">CREEK</span><span id="missVal">0/8</span></div>
+      <button class="hud-icon-btn" id="btnPause" aria-label="Pause game">⏸</button>
+      <button class="hud-icon-btn" id="btnMute" aria-label="Toggle sound">♪</button>
     </div>
+    <div id="timeBarWrap" aria-hidden="true"><div id="timeBarTrack"><div id="timeBar"></div></div></div>
     <div id="comboBadge">Combo x1</div>
     <div id="fitGuide" class="hidden" aria-live="polite"></div>
     <div id="coachHint" class="hidden" aria-live="polite"></div>
@@ -504,6 +591,8 @@
       <div class="game-scene" aria-hidden="true">
         <div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div>
       </div>
+      <div id="laneGuide" aria-hidden="true"></div>
+      <div id="dropGhost" aria-hidden="true"></div>
     </div>
     <div id="binsRow">
       <button class="bin landfill" data-bin="landfill" aria-label="Drop in landfill"><img class="bin-mark" src="assets/bins/landfill.png" alt="">Landfill</button>
@@ -535,6 +624,16 @@
     </div>
   </div>
 
+  <!-- PAUSE OVERLAY -->
+  <div id="pauseOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+    <div id="pauseCard">
+      <h2 id="pauseTitle">PAUSED</h2>
+      <button class="ctrl-btn primary" id="resumeBtn" style="background:#ec5a3b;color:#fff;">RESUME</button>
+      <button class="ctrl-btn" id="restartBtn">RESTART</button>
+      <button class="ctrl-btn" id="quitBtn">QUIT TO MENU</button>
+    </div>
+  </div>
+
   <!-- END SCREEN -->
   <div class="screen hidden" id="endScreen">
     <h1 class="title" id="endTitle">CREEK SAVED!</h1>
@@ -542,6 +641,7 @@
     <div id="endStats">
       <span>FINAL SCORE</span>
       <div id="finalScore">0</div>
+      <span id="bestStats">BEST 0</span>
     </div>
     <button class="big-btn" id="retryBtn">PLAY AGAIN</button>
   </div>
@@ -583,6 +683,12 @@
   const fitGuide = document.getElementById('fitGuide');
   const coachHint = document.getElementById('coachHint');
   const tutorialOverlay = document.getElementById('tutorialOverlay');
+  const pauseOverlay = document.getElementById('pauseOverlay');
+  let laneGuide = document.getElementById('laneGuide');
+  let dropGhost = document.getElementById('dropGhost');
+  const timeBar = document.getElementById('timeBar');
+  const binsRow = document.getElementById('binsRow');
+  const app = document.getElementById('app');
   const bins = Array.from(document.querySelectorAll('.bin'));
 
   const GAME_LENGTH = 60; // seconds
@@ -591,6 +697,49 @@
   // Slow the piece down near the bins so players get extra reaction time.
   const LANDING_SLOW_ZONE = 110;
   const LANDING_SLOW_FACTOR = 0.55;
+  const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Tiny sound engine (no assets, mutable, gesture-safe) ----------
+  let audioCtx = null;
+  function tone(freq, dur, type, delay, gainVal){
+    if (state && state.muted) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const t0 = audioCtx.currentTime + (delay || 0);
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(gainVal || 0.12, t0 + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(t0); osc.stop(t0 + dur + 0.05);
+    } catch (_) {}
+  }
+  function sfx(name){
+    if (state && state.muted) return;
+    if (name === 'move') tone(340, 0.07, 'triangle', 0, 0.06);
+    else if (name === 'rotate') tone(520, 0.08, 'square', 0, 0.045);
+    else if (name === 'fitted') { tone(660, 0.1, 'sine', 0, 0.1); tone(880, 0.14, 'sine', 0.09, 0.1); }
+    else if (name === 'good') { tone(523, 0.1, 'sine', 0, 0.11); tone(659, 0.1, 'sine', 0.08, 0.11); tone(784, 0.16, 'sine', 0.16, 0.11); }
+    else if (name === 'bad') tone(160, 0.28, 'sawtooth', 0, 0.09);
+    else if (name === 'drop') tone(300, 0.12, 'triangle', 0, 0.05);
+    else if (name === 'win') { tone(523, 0.12, 'sine', 0, 0.12); tone(659, 0.12, 'sine', 0.12, 0.12); tone(784, 0.12, 'sine', 0.24, 0.12); tone(1047, 0.3, 'sine', 0.36, 0.12); }
+    else if (name === 'lose') { tone(392, 0.16, 'sine', 0, 0.1); tone(330, 0.16, 'sine', 0.16, 0.1); tone(262, 0.34, 'sine', 0.32, 0.1); }
+  }
+  function buzz(pattern){
+    try { if (navigator.vibrate && !REDUCED_MOTION) navigator.vibrate(pattern); } catch (_) {}
+  }
+  function loadBest(){ try { return parseInt(localStorage.getItem('sortRushBest') || '0', 10) || 0; } catch (_) { return 0; } }
+  function saveBest(v){ try { localStorage.setItem('sortRushBest', String(v)); } catch (_) {} }
+  function refreshBestLine(){
+    const el = document.getElementById('bestLine');
+    if (el) el.textContent = 'BEST: ' + loadBest();
+    const bs = document.getElementById('bestStats');
+    if (bs) bs.textContent = 'BEST ' + loadBest();
+  }
 
   let state;
 
@@ -605,10 +754,13 @@
       activeItem: null,
       items: [],
       running: false,
+      paused: false,
+      muted: false,
       lastSpawn: -999,
       spawnInterval: 2.4,
       lastFrame: null,
     };
+    try { state.muted = localStorage.getItem('sortRushMuted') === '1'; } catch (_) {}
   }
 
   function fieldHeight(){ return field.clientHeight; }
@@ -654,7 +806,52 @@
   function setFitState(item){
     const fitted = item.rotation % 360 === item.fitRotation;
     item.el.classList.toggle('fitted', fitted && item.fitRotation !== 0);
+    updateSpinBadge(item, fitted);
     if (state.activeItem === item) updateFitGuide(item);
+  }
+
+  function updateSpinBadge(item, fitted){
+    let badge = item.el.querySelector('.spin-badge');
+    if (item.fitRotation === 0) { if (badge) badge.remove(); return; }
+    const taps = ((item.fitRotation - (item.rotation % 360) + 360) % 360) / 90;
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'spin-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      item.el.appendChild(badge);
+    }
+    badge.textContent = fitted ? '✓ FIT' : '⟳×' + taps;
+    badge.classList.toggle('done', !!fitted);
+  }
+
+  // Confirmation glow: only lights the bin the piece is actually over,
+  // so players get feedback without the answer being given away.
+  function updateBinHints(item){
+    bins.forEach(b => b.classList.remove('hint-good', 'hint-wrong'));
+    if (!item || !state.running) return;
+    const bin = bins.find(b => b.dataset.bin === LANES[item.lane]);
+    if (!bin) return;
+    const matchesBin = LANES[item.lane] === item.def.bin;
+    const fitted = item.rotation % 360 === item.fitRotation;
+    if (matchesBin && fitted) bin.classList.add('hint-good');
+    else if (!matchesBin) bin.classList.add('hint-wrong');
+  }
+
+  function updateLandingPreview(item){
+    if (!item || !state.running) {
+      laneGuide.style.opacity = '0';
+      dropGhost.style.opacity = '0';
+      return;
+    }
+    const laneW = fieldWidth() / 4;
+    laneGuide.style.opacity = '1';
+    laneGuide.style.left = (laneW * item.lane) + 'px';
+    laneGuide.style.width = laneW + 'px';
+    const fitted = item.rotation % 360 === item.fitRotation;
+    const matchesBin = LANES[item.lane] === item.def.bin;
+    dropGhost.style.opacity = '1';
+    dropGhost.style.left = laneCenterX(item.lane) + 'px';
+    dropGhost.classList.toggle('ready', matchesBin && fitted);
   }
 
   function itemArtwork(type){
@@ -726,28 +923,38 @@
     item.el.style.left = x + 'px';
     item.el.style.top = item.y + 'px';
     item.el.style.transform = 'rotate(' + item.rotation + 'deg)';
+    if (state.activeItem === item) {
+      updateLandingPreview(item);
+      updateBinHints(item);
+    }
   }
 
   function moveActive(dir){
-    if (!state.activeItem) return;
+    if (!state.activeItem || !state.running || state.paused) return;
     const it = state.activeItem;
     it.lane = Math.max(0, Math.min(3, it.lane + dir));
     positionItem(it);
     showCoachFor(it);
+    sfx('move');
   }
 
   function rotateActive(){
-    if (!state.activeItem) return;
+    if (!state.activeItem || !state.running || state.paused) return;
+    const wasFitted = state.activeItem.rotation % 360 === state.activeItem.fitRotation;
     state.activeItem.rotation = (state.activeItem.rotation + 90) % 360;
     setFitState(state.activeItem);
     positionItem(state.activeItem);
     showCoachFor(state.activeItem);
+    const nowFitted = state.activeItem.rotation % 360 === state.activeItem.fitRotation;
+    sfx(nowFitted && !wasFitted ? 'fitted' : 'rotate');
+    if (nowFitted && !wasFitted) buzz(15);
   }
 
   function dropActive(){
-    if (!state.activeItem || state.activeItem.dropping) return;
+    if (!state.activeItem || state.activeItem.dropping || !state.running || state.paused) return;
     state.activeItem.dropping = true;
     state.activeItem.speed *= 3.2;
+    sfx('drop');
   }
 
   // Contextual coach hints: only during the easy opening so veterans are not nagged.
@@ -790,7 +997,7 @@
 
   function landItem(item, correct, missText = 'MISS'){
     item.landed = true;
-    if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); }
+    if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); updateLandingPreview(null); updateBinHints(null); }
     flashBin(LANES[item.lane], correct);
     state.sortedCount++;
     if (correct) {
@@ -801,12 +1008,22 @@
       floatScoreText(laneCenterX(item.lane)-10, fieldHeight()-40, '+'+pts, '#3FAE5C');
       comboBadge.textContent = 'Combo x' + mult.toFixed(mult===1?0:1);
       comboBadge.style.opacity = state.combo >= 3 ? '1' : '0';
+      sfx('good');
+      buzz(20);
     } else {
       state.combo = 0;
       comboBadge.style.opacity = '0';
       state.misses++;
       floatScoreText(laneCenterX(item.lane)-16, fieldHeight()-40, missText, '#D64545');
       updateCreek();
+      sfx('bad');
+      buzz([60, 60, 60]);
+      if (!REDUCED_MOTION) {
+        app.classList.remove('shake');
+        void app.offsetWidth;
+        app.classList.add('shake');
+        setTimeout(()=> app.classList.remove('shake'), 350);
+      }
     }
     updateHud();
     item.el.remove();
@@ -830,10 +1047,37 @@
     scoreVal.textContent = state.score;
     timeVal.textContent = Math.max(0, Math.ceil(state.timeLeft));
     missVal.textContent = state.misses + '/' + MAX_MISSES;
+    if (timeBar) {
+      const pct = Math.max(0, Math.min(100, (state.timeLeft / GAME_LENGTH) * 100));
+      timeBar.style.width = pct + '%';
+      timeBar.classList.toggle('low', state.timeLeft < 15);
+    }
+  }
+
+  function setPaused(paused){
+    if (!state || !state.running) return;
+    state.paused = paused;
+    pauseOverlay.classList.toggle('hidden', !paused);
+    if (!paused) { state.lastFrame = null; requestAnimationFrame(loop); }
+  }
+
+  function spawnConfetti(){
+    if (REDUCED_MOTION) return;
+    const colors = ['#ec5a3b', '#ffca48', '#52c66b', '#157cc0', '#d872a8', '#fffdf5'];
+    for (let i = 0; i < 42; i++) {
+      const bit = document.createElement('div');
+      bit.className = 'confetti-bit';
+      bit.style.left = (4 + Math.random() * 92) + '%';
+      bit.style.background = colors[i % colors.length];
+      bit.style.animationDelay = (Math.random() * 0.5) + 's';
+      bit.style.transform = 'rotate(' + Math.floor(Math.random() * 360) + 'deg)';
+      endScreen.appendChild(bit);
+      setTimeout(()=> bit.remove(), 2600);
+    }
   }
 
   function loop(ts){
-    if (!state.running) return;
+    if (!state.running || state.paused) return;
     if (state.lastFrame == null) state.lastFrame = ts;
     const dt = Math.min(0.05, (ts - state.lastFrame)/1000);
     state.lastFrame = ts;
@@ -879,7 +1123,11 @@
 
   function startGame(){
     resetState();
+    syncMuteBtn();
     field.innerHTML = SCENE_HTML;
+    // innerHTML reset replaces the guide nodes, so re-grab them.
+    laneGuide = document.getElementById('laneGuide');
+    dropGhost = document.getElementById('dropGhost');
     muck.style.height = '0%';
     document.getElementById('creek').style.background = 'var(--creek-clean)';
     comboBadge.style.opacity = '0';
@@ -887,11 +1135,13 @@
     fitGuide.classList.remove('ready');
     coachHint.classList.add('hidden');
     tutorialOverlay.classList.add('hidden');
+    pauseOverlay.classList.add('hidden');
     updateHud();
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     state.running = true;
+    state.paused = false;
     // First piece spawns right away so new players see what to do instantly.
     state.lastSpawn = -999;
     requestAnimationFrame(loop);
@@ -899,23 +1149,78 @@
 
   function endGame(won){
     state.running = false;
+    state.paused = false;
+    pauseOverlay.classList.add('hidden');
     coachHint.classList.add('hidden');
+    updateLandingPreview(null);
+    updateBinHints(null);
     gameScreen.classList.add('hidden');
     document.getElementById('endTitle').textContent = won ? 'CREEK SAVED!' : 'CREEK POLLUTED';
     document.getElementById('endSubtitle').textContent = won
       ? 'Nice sorting. The water stayed clean.'
       : 'Too much trash got through. Give it another shot.';
     document.getElementById('finalScore').textContent = state.score;
+    const prevBest = loadBest();
+    const isBest = state.score > prevBest;
+    if (isBest) saveBest(state.score);
+    refreshBestLine();
+    if (isBest) document.getElementById('bestStats').textContent = 'NEW BEST ' + state.score + '!';
+    document.getElementById('endSubtitle').textContent += isBest ? ' New best score!' : '';
     endScreen.classList.remove('hidden');
+    sfx(won ? 'win' : 'lose');
+    buzz(won ? [30, 50, 30, 50, 60] : [120]);
+    if (won) spawnConfetti();
+  }
+
+  function syncMuteBtn(){
+    const btn = document.getElementById('btnMute');
+    if (btn) btn.textContent = state.muted ? '✕' : '♪';
   }
 
   document.getElementById('startBtn').addEventListener('click', startGame);
   document.getElementById('retryBtn').addEventListener('click', startGame);
 
-  document.getElementById('btnLeft').addEventListener('click', ()=> moveActive(-1));
-  document.getElementById('btnRight').addEventListener('click', ()=> moveActive(1));
-  document.getElementById('btnRotate').addEventListener('click', rotateActive);
+  // Hold-to-repeat: press-and-hold moves/rotates continuously (much easier on touch).
+  // Pointer handles mouse/touch/pen; the guarded click covers keyboard activation only.
+  function holdToRepeat(btn, fn){
+    let delayTimer = null;
+    let repeatTimer = null;
+    const stop = ()=>{
+      if (delayTimer) { clearTimeout(delayTimer); delayTimer = null; }
+      if (repeatTimer) { clearInterval(repeatTimer); repeatTimer = null; }
+    };
+    btn.addEventListener('pointerdown', ()=>{
+      fn();
+      stop();
+      delayTimer = setTimeout(()=>{ repeatTimer = setInterval(fn, 170); }, 380);
+    });
+    btn.addEventListener('click', (e)=>{ if (e.detail === 0) fn(); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  }
+  holdToRepeat(document.getElementById('btnLeft'), ()=> moveActive(-1));
+  holdToRepeat(document.getElementById('btnRight'), ()=> moveActive(1));
+  holdToRepeat(document.getElementById('btnRotate'), rotateActive);
   document.getElementById('btnDrop').addEventListener('click', dropActive);
+
+  document.getElementById('btnPause').addEventListener('click', ()=> setPaused(!state.paused));
+  document.getElementById('resumeBtn').addEventListener('click', ()=> setPaused(false));
+  document.getElementById('restartBtn').addEventListener('click', startGame);
+  document.getElementById('quitBtn').addEventListener('click', ()=>{
+    state.running = false;
+    state.paused = false;
+    pauseOverlay.classList.add('hidden');
+    gameScreen.classList.add('hidden');
+    endScreen.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+    refreshBestLine();
+  });
+  document.getElementById('btnMute').addEventListener('click', ()=>{
+    state.muted = !state.muted;
+    try { localStorage.setItem('sortRushMuted', state.muted ? '1' : '0'); } catch (_) {}
+    syncMuteBtn();
+  });
+  // Auto-pause when the tab loses focus so players are not punished.
+  document.addEventListener('visibilitychange', ()=>{ if (document.hidden && state && state.running && !state.paused) setPaused(true); });
 
   // ---------- Tutorial (3 quick steps, skippable) ----------
   const TUTORIAL_STEPS = [
@@ -951,39 +1256,69 @@
   tutorialOverlay.addEventListener('click', (e)=>{ if (e.target === tutorialOverlay) tutorialOverlay.classList.add('hidden'); });
   document.getElementById('howBtn').addEventListener('click', openTutorial);
 
-  // ---------- Easier input: swipe / drag the falling piece ----------
+  // ---------- Direct input: drag sideways to steer, flick down to drop,
+  // release over a bin to sort there, tap the piece to rotate ----------
   let dragX = null;
+  let dragY = null;
+  let dragMoved = false;
   field.addEventListener('pointerdown', (e)=>{
-    if (!state || !state.activeItem) return;
+    if (!state || !state.activeItem || state.paused) return;
     dragX = e.clientX;
+    dragY = e.clientY;
+    dragMoved = false;
     try { field.setPointerCapture(e.pointerId); } catch (_) {}
   });
   field.addEventListener('pointermove', (e)=>{
-    if (dragX == null || !state || !state.activeItem) return;
-    const dx = e.clientX - dragX;
-    const laneW = fieldWidth() / 4;
-    if (Math.abs(dx) > laneW * 0.4) {
-      moveActive(dx > 0 ? 1 : -1);
-      dragX = e.clientX;
+    if (dragX == null || !state || !state.activeItem || state.paused) return;
+    // Direct steering: map pointer x to the lane under the finger.
+    try {
+      const rect = field.getBoundingClientRect();
+      const target = Math.max(0, Math.min(3, Math.floor((e.clientX - rect.left) / rect.width * 4)));
+      if (target !== state.activeItem.lane) {
+        state.activeItem.lane = target;
+        positionItem(state.activeItem);
+        showCoachFor(state.activeItem);
+        dragMoved = true;
+      }
+    } catch (_) {}
+    // Fast downward flick = drop.
+    if (dragY != null && e.clientY - dragY > 70) {
+      dropActive();
+      dragY = e.clientY;
+      dragMoved = true;
+    } else if (Math.abs(e.clientX - dragX) > 8) {
+      dragMoved = true;
     }
   });
   function endDrag(e){
     if (dragX == null) return;
-    // Fast downward flick = drop. Tap on the piece = rotate (much easier on phones).
-    if (e && typeof e.clientY === 'number' && state && state.activeItem) {
-      const rect = state.activeItem.el.getBoundingClientRect();
-      const tappedPiece = e.clientX >= rect.left - 12 && e.clientX <= rect.right + 12 &&
-        e.clientY >= rect.top - 12 && e.clientY <= rect.bottom + 12;
-      if (tappedPiece && Math.abs(e.clientX - dragX) < 12) rotateActive();
+    // Release over the bin row sorts into the bin under the finger.
+    if (e && typeof e.clientY === 'number' && state && state.activeItem && !state.paused) {
+      try {
+        const binsRect = binsRow.getBoundingClientRect();
+        if (e.clientY >= binsRect.top - 30 && e.clientY <= binsRect.bottom + 30) {
+          const target = Math.max(0, Math.min(3, Math.floor((e.clientX - binsRect.left) / binsRect.width * 4)));
+          state.activeItem.lane = target;
+          positionItem(state.activeItem);
+          dropActive();
+          dragX = null; dragY = null;
+          return;
+        }
+        // Tap on the piece = rotate (much easier on phones).
+        const rect = state.activeItem.el.getBoundingClientRect();
+        const tappedPiece = e.clientX >= rect.left - 12 && e.clientX <= rect.right + 12 &&
+          e.clientY >= rect.top - 12 && e.clientY <= rect.bottom + 12;
+        if (tappedPiece && !dragMoved) rotateActive();
+      } catch (_) {}
     }
-    dragX = null;
+    dragX = null; dragY = null;
   }
   field.addEventListener('pointerup', endDrag);
-  field.addEventListener('pointercancel', ()=>{ dragX = null; });
+  field.addEventListener('pointercancel', ()=>{ dragX = null; dragY = null; });
 
   bins.forEach(bin => {
     bin.addEventListener('click', () => {
-      if (!state || !state.activeItem) return;
+      if (!state || !state.activeItem || state.paused) return;
       const idx = LANES.indexOf(bin.dataset.bin);
       state.activeItem.lane = idx;
       positionItem(state.activeItem);
@@ -997,7 +1332,19 @@
       if (e.key === 'Enter') tutNext.click();
       return;
     }
+    if (pauseOverlay && !pauseOverlay.classList.contains('hidden')) {
+      if (e.key === 'Escape' || e.key === 'p' || e.key === 'P' || e.key === 'Enter') setPaused(false);
+      return;
+    }
     if (!state || !state.running) return;
+    if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { setPaused(true); return; }
+    if (e.key === 'm' || e.key === 'M') {
+      state.muted = !state.muted;
+      try { localStorage.setItem('sortRushMuted', state.muted ? '1' : '0'); } catch (_) {}
+      syncMuteBtn();
+      return;
+    }
+    if (state.paused) return;
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveActive(-1);
     else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveActive(1);
     else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'r' || e.key === 'R') rotateActive();
@@ -1005,6 +1352,8 @@
   });
 
   resetState();
+  syncMuteBtn();
+  refreshBestLine();
   updateHud();
 })();
 </script>
