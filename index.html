@@ -353,16 +353,25 @@
     --cream: var(--paper);
     --shadow: rgba(24,49,74,.22);
   }
-  body { font-family: 'Nunito Sans', sans-serif; background: #b9e6ee; }
+  body { font-family: 'Nunito Sans', sans-serif; background: #0e2a3f; }
   #app {
-    background: linear-gradient(180deg, #73cbed 0%, #bde9ee 48%, #d9f3da 100%);
+    background:
+      radial-gradient(ellipse 90% 34% at 78% 4%, rgba(255,236,170,.85), transparent 70%),
+      radial-gradient(ellipse 70% 26% at 12% 0%, rgba(255,255,255,.5), transparent 70%),
+      linear-gradient(180deg, #3d9fd6 0%, #7cc9e8 34%, #c9ecdf 58%, #fdf0c2 72%, #a9d97c 100%);
     isolation: isolate;
   }
   #app::before {
     content: ''; position: absolute; inset: 0; pointer-events: none; z-index: -1;
-    background-image: radial-gradient(circle at 18% 11%, rgba(255,255,255,.7) 0 3px, transparent 4px), radial-gradient(circle at 83% 30%, rgba(255,255,255,.42) 0 2px, transparent 3px);
-    background-size: 37px 37px, 29px 29px;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,.85) 0 2px, transparent 3px),
+      radial-gradient(circle, rgba(255,244,190,.9) 0 1.6px, transparent 2.6px);
+    background-size: 90px 90px, 64px 64px;
+    background-position: 0 0, 30px 18px;
+    opacity: .5;
+    animation: moteDrift 26s linear infinite;
   }
+  @keyframes moteDrift { 0% { background-position: 0 0, 30px 18px; } 100% { background-position: 90px 45px, -34px 82px; } }
   h1.title, button.big-btn, #hud, #comboBadge, .bin, .ctrl-btn, .float-score, #endStats { font-family: 'Bungee', cursive; }
   h1.title { font-size: clamp(2.4rem, 11vw, 3.35rem); letter-spacing: .025em; color: var(--navy); text-shadow: 0 4px 0 rgba(255,255,255,.78); }
   h1.title span { color: #eb5a3c; }
@@ -384,16 +393,33 @@
   #fitGuide { position: absolute; top: 69px; right: 14px; z-index: 8; background: #18314a; color: white; border: 2px solid rgba(255,255,255,.65); border-radius: 12px; box-shadow: 0 3px 0 rgba(24,49,74,.2); padding: 5px 8px; font-size: .55rem; letter-spacing: .04em; }
   #fitGuide.ready { background: #287d45; }
 
-  #field { margin: 0 8px; width: calc(100% - 16px); border: 2px solid rgba(24,49,74,.15); border-radius: 24px 24px 18px 18px; background: linear-gradient(180deg, rgba(255,255,255,.17), rgba(255,255,255,.02)); }
-  .game-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-  .scene-sun { position: absolute; width: 58px; height: 58px; border-radius: 50%; background: var(--sun); top: 8%; right: 9%; box-shadow: 0 0 0 8px rgba(255,202,72,.18); }
-  .scene-cloud { position: absolute; width: 78px; height: 24px; border-radius: 30px; background: rgba(255,255,255,.72); top: 17%; left: 8%; filter: drop-shadow(0 3px 0 rgba(54,121,143,.1)); }
+  #field { margin: 0 8px; width: calc(100% - 16px); border: 2px solid rgba(24,49,74,.15); border-radius: 24px 24px 18px 18px; background: linear-gradient(180deg, rgba(61,159,214,.28), rgba(253,240,194,.20) 62%, rgba(169,217,124,.30)); box-shadow: inset 0 0 40px rgba(24,49,74,.12); }
+  .game-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
+  .scene-sun { position: absolute; width: 64px; height: 64px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe9a3, var(--sun) 70%); top: 6%; right: 8%; box-shadow: 0 0 0 8px rgba(255,202,72,.18), 0 0 34px 10px rgba(255,202,72,.45); }
+  .scene-sun::before { content: ''; position: absolute; inset: -16px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0 12deg, rgba(255,220,120,.55) 12deg 18deg, transparent 18deg 45deg, rgba(255,220,120,.55) 45deg 51deg, transparent 51deg 90deg, rgba(255,220,120,.55) 90deg 96deg, transparent 96deg 135deg, rgba(255,220,120,.55) 135deg 141deg, transparent 141deg 180deg, rgba(255,220,120,.55) 180deg 186deg, transparent 186deg 225deg, rgba(255,220,120,.55) 225deg 231deg, transparent 231deg 270deg, rgba(255,220,120,.55) 270deg 276deg, transparent 276deg 315deg, rgba(255,220,120,.55) 315deg 321deg, transparent 321deg 360deg); animation: sunSpin 40s linear infinite; }
+  @keyframes sunSpin { to { transform: rotate(360deg); } }
+  .scene-cloud { position: absolute; width: 84px; height: 26px; border-radius: 30px; background: rgba(255,255,255,.9); top: 14%; left: 6%; filter: drop-shadow(0 4px 0 rgba(54,121,143,.12)); animation: cloudDrift 17s ease-in-out infinite alternate; }
   .scene-cloud::before, .scene-cloud::after { content: ''; position: absolute; bottom: 7px; background: inherit; border-radius: 50%; }
-  .scene-cloud::before { width: 34px; height: 34px; left: 12px; }
-  .scene-cloud::after { width: 26px; height: 26px; right: 13px; }
-  .scene-hills { position: absolute; height: 38%; width: 140%; bottom: -17%; left: -20%; border-radius: 50% 50% 0 0; background: #a7d477; box-shadow: 135px -15px 0 #8fc46b, 240px 12px 0 #c3df8f; opacity: .92; }
-  .scene-reeds { position: absolute; bottom: 3%; left: 8%; width: 78px; height: 96px; background: repeating-linear-gradient(78deg, transparent 0 11px, #4b8d55 12px 15px, transparent 16px 22px); transform: skewX(-8deg); opacity: .78; }
-  .scene-pebbles { position: absolute; bottom: 6%; right: 5%; width: 95px; height: 24px; background: radial-gradient(ellipse at 15% 72%, #e8d6af 0 7px, transparent 8px), radial-gradient(ellipse at 50% 40%, #cfbd98 0 6px, transparent 7px), radial-gradient(ellipse at 86% 77%, #ecdfbf 0 8px, transparent 9px); }
+  .scene-cloud::before { width: 36px; height: 36px; left: 13px; }
+  .scene-cloud::after { width: 27px; height: 27px; right: 14px; }
+  .scene-cloud.two { width: 58px; height: 18px; top: 30%; left: 62%; opacity: .75; animation-duration: 23s; animation-delay: -8s; }
+  .scene-cloud.two::before { width: 24px; height: 24px; left: 9px; }
+  .scene-cloud.two::after { width: 18px; height: 18px; right: 10px; }
+  @keyframes cloudDrift { from { transform: translateX(-14px); } to { transform: translateX(20px); } }
+  .scene-birds { position: absolute; top: 9%; left: 30%; width: 60px; height: 20px; opacity: .6; animation: birdBob 5s ease-in-out infinite alternate; }
+  .scene-birds::before, .scene-birds::after { content: ''; position: absolute; top: 4px; width: 16px; height: 10px; border-top: 3px solid #2b4a5e; border-radius: 50%; }
+  .scene-birds::before { left: 6px; transform: rotate(-12deg); }
+  .scene-birds::after { left: 32px; transform: rotate(10deg) scale(.75); }
+  @keyframes birdBob { from { transform: translateY(-3px); } to { transform: translateY(4px); } }
+  .scene-mountains { position: absolute; bottom: 30%; left: -10%; width: 120%; height: 34%; background: linear-gradient(180deg, #8fb8d8, #6d9ec4); clip-path: polygon(0 100%, 0 62%, 9% 38%, 17% 60%, 28% 30%, 38% 58%, 48% 36%, 58% 62%, 69% 34%, 79% 60%, 89% 42%, 100% 64%, 100% 100%); opacity: .85; }
+  .scene-mountains::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,.55), transparent 45%); clip-path: polygon(0 100%, 0 62%, 9% 38%, 17% 60%, 28% 30%, 38% 58%, 48% 36%, 58% 62%, 69% 34%, 79% 60%, 89% 42%, 100% 64%, 100% 100%); }
+  .scene-hills { position: absolute; height: 36%; width: 150%; bottom: -15%; left: -25%; border-radius: 50% 50% 0 0; background: linear-gradient(180deg, #b7e184, #8fc46b); box-shadow: 135px -15px 0 #9bd374, 240px 12px 0 #c9e79b; opacity: .95; }
+  .scene-pines { position: absolute; bottom: 22%; left: 0; width: 100%; height: 44px; background: conic-gradient(from 180deg at 8% 100%, #2e6b46 0 8deg, transparent 8deg 16deg, #35794f 16deg 22deg, transparent 22deg 30deg, #2e6b46 30deg 37deg, transparent 37deg 46deg, #35794f 46deg 52deg, transparent 52deg 60deg, #2e6b46 60deg 67deg, transparent 67deg 76deg, #35794f 76deg 82deg, transparent 82deg 90deg); background-size: 180px 44px; background-repeat: repeat-x; opacity: .9; }
+  .scene-reeds { position: absolute; bottom: 3%; left: 6%; width: 84px; height: 100px; background: repeating-linear-gradient(78deg, transparent 0 11px, #3f7d4b 12px 15px, transparent 16px 22px); transform: skewX(-8deg); opacity: .85; animation: reedSway 4s ease-in-out infinite alternate; transform-origin: bottom; }
+  @keyframes reedSway { from { transform: skewX(-11deg); } to { transform: skewX(-4deg); } }
+  .scene-pebbles { position: absolute; bottom: 5%; right: 4%; width: 100px; height: 26px; background: radial-gradient(ellipse at 15% 72%, #efe0bd 0 7px, transparent 8px), radial-gradient(ellipse at 50% 40%, #d6c49c 0 6px, transparent 7px), radial-gradient(ellipse at 86% 77%, #f2e4c4 0 8px, transparent 9px); }
+  .scene-motes { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,.9) 0 1.6px, transparent 2.4px); background-size: 52px 52px; opacity: .55; animation: moteFloat 9s ease-in-out infinite alternate; }
+  @keyframes moteFloat { from { transform: translateY(6px); } to { transform: translateY(-8px); } }
 
   .item { width: 74px; height: 78px; border-radius: 20px; background: rgba(255,253,245,.9); border: 2px solid rgba(24,49,74,.12); box-shadow: 0 7px 0 rgba(24,49,74,.2), 0 12px 16px rgba(24,49,74,.12); padding: 3px 2px 4px; justify-content: flex-start; gap: 0; backdrop-filter: blur(2px); }
   .item.active { box-shadow: 0 0 0 3px #f9b83c, 0 7px 0 rgba(24,49,74,.2), 0 12px 16px rgba(24,49,74,.12); }
@@ -415,7 +441,8 @@
   .bin.flash-good { filter: brightness(1.2) saturate(1.45); transform: translateY(-3px); }
 
   #creek { height: 54px; margin: 7px 8px 0; border: 2px solid rgba(24,49,74,.14); border-radius: 16px 16px 8px 8px; box-shadow: inset 0 4px rgba(255,255,255,.18); }
-  #creek::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 13px, rgba(255,255,255,.18) 14px 17px, transparent 18px 31px); opacity: .9; }
+  #creek::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 13px, rgba(255,255,255,.22) 14px 17px, transparent 18px 31px); background-size: 44px 44px; opacity: .9; animation: creekFlow 2.6s linear infinite; }
+  @keyframes creekFlow { from { background-position: 0 0; } to { background-position: 44px 0; } }
   #creek-label { letter-spacing: .12em; font-size: .6rem; }
   .muck { background: linear-gradient(180deg, rgba(119,83,48,.78), var(--creek-dirty)); }
   #controls { gap: 10px; padding: 10px 14px calc(13px + env(safe-area-inset-bottom, 0px)); }
@@ -549,7 +576,10 @@
   @media (prefers-reduced-motion: reduce) {
     .item.fitted { animation: none; }
     #app.shake { animation: none; }
+    #app::before { animation: none; }
     #creek::after { animation: none; display: none; }
+    #creek::before { animation: none; }
+    .scene-sun::before, .scene-cloud, .scene-birds, .scene-reeds, .scene-motes { animation: none; }
     .confetti-bit { animation-duration: .01s; }
   }
   @media (min-width: 600px) { #app { height: min(94vh, 880px); border-radius: 30px; box-shadow: 0 20px 70px rgba(24,49,74,.27); border: 8px solid rgba(255,255,255,.7); } }
@@ -589,7 +619,7 @@
     <div id="coachHint" class="hidden" aria-live="polite"></div>
     <div id="field">
       <div class="game-scene" aria-hidden="true">
-        <div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div>
+        <div class="scene-mountains"></div><div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-cloud two"></div><div class="scene-birds"></div><div class="scene-pines"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div><div class="scene-motes"></div>
       </div>
       <div id="laneGuide" aria-hidden="true"></div>
       <div id="dropGhost" aria-hidden="true"></div>
