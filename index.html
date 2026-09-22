@@ -422,6 +422,53 @@
   .ctrl-btn { min-width: 64px; color: #24475d; background: var(--paper); border: 2px solid rgba(24,49,74,.1); border-radius: 15px; box-shadow: 0 4px 0 rgba(24,49,74,.17); }
   #endStats { border: 2px solid rgba(24,49,74,.1); border-radius: 20px; box-shadow: 0 5px 0 rgba(24,49,74,.16); }
   #endStats span { font-family: 'Nunito Sans', sans-serif; color: #477086; opacity: 1; letter-spacing: .12em; }
+  /* ---------- Tutorial + coach hints + easy controls ---------- */
+  #coachHint {
+    margin: 6px 14px 0; background: #18314a; color: #fff; border-radius: 12px;
+    padding: 8px 12px; font-size: .8rem; font-weight: 900; text-align: center;
+    box-shadow: 0 3px 0 rgba(24,49,74,.2); z-index: 9; line-height: 1.35;
+  }
+  #coachHint.hidden { display: none !important; }
+  #coachHint .coach-key {
+    display: inline-block; background: #ffdc66; color: #18314a; border-radius: 8px;
+    padding: 1px 8px; margin: 0 2px; font-weight: 900;
+  }
+  #tutorialOverlay {
+    position: absolute; inset: 0; z-index: 30; display: flex; align-items: center;
+    justify-content: center; padding: 22px; background: rgba(24,49,74,.55);
+  }
+  #tutorialOverlay.hidden { display: none !important; }
+  #tutorialCard {
+    background: var(--paper); border-radius: 22px; padding: 22px 20px; max-width: 340px;
+    width: 100%; box-shadow: 0 10px 0 rgba(24,49,74,.25); text-align: center;
+    border: 2px solid rgba(24,49,74,.12);
+  }
+  #tutorialCard h2 { font-family: 'Bungee', cursive; margin: 0 0 4px; font-size: 1.25rem; color: var(--navy); }
+  #tutorialStep { font-size: .68rem; font-weight: 900; letter-spacing: .12em; color: #477086; }
+  #tutorialArt { font-size: 2.6rem; line-height: 1; margin: 6px 0 2px; }
+  #tutorialText { font-size: .92rem; font-weight: 800; line-height: 1.5; color: #24475d; min-height: 66px; margin: 8px 0; }
+  #tutorialText .coach-key {
+    display: inline-block; background: #18314a; color: #fff; border-radius: 8px;
+    padding: 1px 8px; margin: 0 2px; font-weight: 900;
+  }
+  #tutorialDots { display: flex; gap: 6px; justify-content: center; margin: 6px 0 10px; }
+  #tutorialDots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(24,49,74,.18); }
+  #tutorialDots span.on { background: #ec5a3b; }
+  #tutorialBtns { display: flex; gap: 8px; justify-content: center; }
+  #tutorialBtns .ctrl-btn { flex: 1; font-size: .95rem; padding: 12px 8px; min-height: 52px; }
+  #tutorialBtns .primary { background: #ec5a3b; color: #fff; border-color: rgba(255,255,255,.5); }
+  .btn-secondary {
+    font-family: 'Bungee', cursive; font-size: .85rem; background: rgba(255,253,245,.9);
+    color: #24475d; border: 2px solid rgba(24,49,74,.14); border-radius: 14px;
+    padding: 10px 22px; box-shadow: 0 4px 0 rgba(24,49,74,.17); cursor: pointer;
+  }
+  #controls .ctrl-btn { min-width: 72px; min-height: 56px; font-size: 1.35rem; }
+  #btnDrop {
+    flex: 1; background: #ec5a3b; color: #fff; border: 2px solid rgba(255,255,255,.5);
+    font-size: 1rem; letter-spacing: .05em;
+  }
+  .item { touch-action: none; }
+  #field { touch-action: pan-y; }
   @media (min-width: 600px) { #app { height: min(94vh, 880px); border-radius: 30px; box-shadow: 0 20px 70px rgba(24,49,74,.27); border: 8px solid rgba(255,255,255,.7); } }
 </style>
 </head>
@@ -439,6 +486,7 @@
       <div class="legend-item"><span class="legend-dot" style="background:var(--electronic)"></span>Electronic</div>
     </div>
     <button class="big-btn" id="startBtn">START</button>
+    <button class="btn-secondary" id="howBtn">HOW TO PLAY</button>
     <p class="subtitle control-hint">Tap a bin, or use ← → and space to drop. ↑ spins for fun.</p>
   </div>
 
@@ -451,6 +499,7 @@
     </div>
     <div id="comboBadge">Combo x1</div>
     <div id="fitGuide" class="hidden" aria-live="polite"></div>
+    <div id="coachHint" class="hidden" aria-live="polite"></div>
     <div id="field">
       <div class="game-scene" aria-hidden="true">
         <div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div>
@@ -467,6 +516,22 @@
       <button class="ctrl-btn" id="btnLeft" aria-label="Move left">◀</button>
       <button class="ctrl-btn" id="btnRotate" aria-label="Rotate item to fit">⟳</button>
       <button class="ctrl-btn" id="btnRight" aria-label="Move right">▶</button>
+      <button class="ctrl-btn" id="btnDrop" aria-label="Drop item fast">DROP ⬇</button>
+    </div>
+  </div>
+
+  <!-- TUTORIAL OVERLAY -->
+  <div id="tutorialOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+    <div id="tutorialCard">
+      <div id="tutorialStep">STEP 1 OF 3</div>
+      <h2 id="tutorialTitle">Move it</h2>
+      <div id="tutorialArt" aria-hidden="true">◀ 📦 ▶</div>
+      <p id="tutorialText"></p>
+      <div id="tutorialDots"><span class="on"></span><span></span><span></span></div>
+      <div id="tutorialBtns">
+        <button class="ctrl-btn" id="tutBack">BACK</button>
+        <button class="ctrl-btn primary" id="tutNext">NEXT</button>
+      </div>
     </div>
   </div>
 
@@ -516,11 +581,16 @@
   const muck = document.getElementById('muck');
   const comboBadge = document.getElementById('comboBadge');
   const fitGuide = document.getElementById('fitGuide');
+  const coachHint = document.getElementById('coachHint');
+  const tutorialOverlay = document.getElementById('tutorialOverlay');
   const bins = Array.from(document.querySelectorAll('.bin'));
 
   const GAME_LENGTH = 60; // seconds
-  const MAX_MISSES = 6;
+  const MAX_MISSES = 8;
   const ITEM_SIZE = 74;
+  // Slow the piece down near the bins so players get extra reaction time.
+  const LANDING_SLOW_ZONE = 110;
+  const LANDING_SLOW_FACTOR = 0.55;
 
   let state;
 
@@ -529,6 +599,7 @@
       score: 0,
       misses: 0,
       combo: 0,
+      sortedCount: 0,
       timeLeft: GAME_LENGTH,
       elapsed: 0,
       activeItem: null,
@@ -548,9 +619,9 @@
   }
 
   function difficultyFor(elapsed){
-    if (elapsed < 15) return { speed: 42, spawnInterval: 4.2, rotationChance: 0 };
-    if (elapsed < 35) return { speed: 54, spawnInterval: 3.0, rotationChance: 0.45 };
-    return { speed: Math.min(84, 66 + (elapsed - 35) * 0.8), spawnInterval: Math.max(1.15, 2.3 - (elapsed - 35) * 0.035), rotationChance: 0.8 };
+    if (elapsed < 15) return { speed: 34, spawnInterval: 4.6, rotationChance: 0 };
+    if (elapsed < 35) return { speed: 44, spawnInterval: 3.6, rotationChance: 0.3 };
+    return { speed: Math.min(66, 54 + (elapsed - 35) * 0.5), spawnInterval: Math.max(2.0, 3.0 - (elapsed - 35) * 0.03), rotationChance: 0.55 };
   }
 
   function fitRotationFor(elapsed){
@@ -570,7 +641,12 @@
     if (!item || item.fitRotation === 0) { fitGuide.classList.add('hidden'); return; }
     const arrows = { 90: '→', 180: '↓', 270: '←' };
     const fitted = item.rotation % 360 === item.fitRotation;
-    fitGuide.textContent = fitted ? 'FIT READY ✓' : 'TURN ' + arrows[item.fitRotation];
+    if (fitted) {
+      fitGuide.textContent = 'FIT READY ✓ — drop it!';
+    } else {
+      const taps = ((item.fitRotation - (item.rotation % 360) + 360) % 360) / 90;
+      fitGuide.textContent = 'TAP ⟳ ' + taps + 'x ' + arrows[item.fitRotation] + ' TO FIT';
+    }
     fitGuide.classList.toggle('ready', fitted);
     fitGuide.classList.remove('hidden');
   }
@@ -637,6 +713,7 @@
       rotation,
       fitRotation,
       landed: false,
+      dropping: false,
     };
     state.items.push(itemObj);
     state.activeItem = itemObj;
@@ -656,18 +733,41 @@
     const it = state.activeItem;
     it.lane = Math.max(0, Math.min(3, it.lane + dir));
     positionItem(it);
+    showCoachFor(it);
   }
 
   function rotateActive(){
     if (!state.activeItem) return;
-    state.activeItem.rotation += 90;
+    state.activeItem.rotation = (state.activeItem.rotation + 90) % 360;
     setFitState(state.activeItem);
     positionItem(state.activeItem);
+    showCoachFor(state.activeItem);
   }
 
   function dropActive(){
-    if (!state.activeItem) return;
+    if (!state.activeItem || state.activeItem.dropping) return;
+    state.activeItem.dropping = true;
     state.activeItem.speed *= 3.2;
+  }
+
+  // Contextual coach hints: only during the easy opening so veterans are not nagged.
+  function showCoachFor(item){
+    if (!state.running || state.elapsed > 22 || state.sortedCount > 5) {
+      coachHint.classList.add('hidden');
+      return;
+    }
+    const binName = item.def.bin.toUpperCase();
+    const laneName = LANES[item.lane].toUpperCase();
+    let msg;
+    if (item.fitRotation !== 0 && item.rotation % 360 !== item.fitRotation) {
+      msg = 'TAP <span class="coach-key">⟳</span> until it glows GREEN, then drop!';
+    } else if (LANES[item.lane] !== item.def.bin) {
+      msg = '<span class="coach-key">' + item.def.label.toUpperCase() + '</span> goes in <span class="coach-key">' + binName + '</span> — move to ' + binName + ' (now ' + laneName + ')';
+    } else {
+      msg = 'Perfect! TAP <span class="coach-key">' + binName + '</span> or <span class="coach-key">DROP ⬇</span>!';
+    }
+    coachHint.innerHTML = msg;
+    coachHint.classList.remove('hidden');
   }
 
   function flashBin(binName, good){
@@ -692,6 +792,7 @@
     item.landed = true;
     if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); }
     flashBin(LANES[item.lane], correct);
+    state.sortedCount++;
     if (correct) {
       state.combo++;
       const mult = state.combo >= 8 ? 2 : (state.combo >= 3 ? 1.5 : 1);
@@ -745,23 +846,31 @@
       return;
     }
 
-    // dynamic spawn interval: gets faster over time
+    // dynamic spawn interval: gets faster over time.
+    // Only one controllable piece falls at a time so the player is never
+    // forced into an unavoidable miss on an older item.
     const targetInterval = difficultyFor(state.elapsed).spawnInterval;
-    if (state.elapsed - state.lastSpawn > targetInterval) {
+    if (!state.activeItem && state.elapsed - state.lastSpawn > targetInterval) {
       spawnItem();
       state.lastSpawn = state.elapsed;
+      showCoachFor(state.activeItem);
     }
 
     const binTop = field.clientHeight - 6;
     state.items.slice().forEach(item => {
       if (item.landed) return;
-      item.y += item.speed * dt;
+      let step = item.speed * dt;
+      // Gentle landing assist: slow down right above the bins for extra control time.
+      if (!item.dropping && item.y + ITEM_SIZE >= binTop - LANDING_SLOW_ZONE) {
+        step *= LANDING_SLOW_FACTOR;
+      }
+      item.y += step;
       positionItem(item);
       if (item.y + ITEM_SIZE >= binTop) {
         const matchesBin = LANES[item.lane] === item.def.bin;
         const isFitted = item.rotation % 360 === item.fitRotation;
         const correct = matchesBin && isFitted;
-        landItem(item, correct, matchesBin ? 'TURN' : 'MISS');
+        landItem(item, correct, matchesBin ? 'ROTATE!' : 'MISS');
       }
     });
 
@@ -776,16 +885,21 @@
     comboBadge.style.opacity = '0';
     fitGuide.classList.add('hidden');
     fitGuide.classList.remove('ready');
+    coachHint.classList.add('hidden');
+    tutorialOverlay.classList.add('hidden');
     updateHud();
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     state.running = true;
+    // First piece spawns right away so new players see what to do instantly.
+    state.lastSpawn = -999;
     requestAnimationFrame(loop);
   }
 
   function endGame(won){
     state.running = false;
+    coachHint.classList.add('hidden');
     gameScreen.classList.add('hidden');
     document.getElementById('endTitle').textContent = won ? 'CREEK SAVED!' : 'CREEK POLLUTED';
     document.getElementById('endSubtitle').textContent = won
@@ -801,6 +915,71 @@
   document.getElementById('btnLeft').addEventListener('click', ()=> moveActive(-1));
   document.getElementById('btnRight').addEventListener('click', ()=> moveActive(1));
   document.getElementById('btnRotate').addEventListener('click', rotateActive);
+  document.getElementById('btnDrop').addEventListener('click', dropActive);
+
+  // ---------- Tutorial (3 quick steps, skippable) ----------
+  const TUTORIAL_STEPS = [
+    { title: 'Move it', art: '◀ 📦 ▶', text: 'Trash falls from the sky. Move it with <span class="coach-key">◀</span> <span class="coach-key">▶</span>, the arrow keys, or by dragging it. You only ever control ONE piece!' },
+    { title: 'Fit it', art: '⟳ ✅', text: 'Some pieces need a spin. Tap <span class="coach-key">⟳</span> until the piece glows GREEN and says FIT READY. No green = no points!' },
+    { title: 'Sort it', art: '♻️ 🌱', text: 'Drop it in the matching bin: tap the bin, press <span class="coach-key">DROP ⬇</span> or SPACE. Right bin + right fit = points. 8 misses pollutes the creek!' },
+  ];
+  let tutIndex = 0;
+  const tutStep = document.getElementById('tutorialStep');
+  const tutTitle = document.getElementById('tutorialTitle');
+  const tutArt = document.getElementById('tutorialArt');
+  const tutText = document.getElementById('tutorialText');
+  const tutDots = Array.from(document.querySelectorAll('#tutorialDots span'));
+  const tutNext = document.getElementById('tutNext');
+  const tutBack = document.getElementById('tutBack');
+
+  function renderTutorial(){
+    const s = TUTORIAL_STEPS[tutIndex];
+    tutStep.textContent = 'STEP ' + (tutIndex + 1) + ' OF ' + TUTORIAL_STEPS.length;
+    tutTitle.textContent = s.title;
+    tutArt.textContent = s.art;
+    tutText.innerHTML = s.text;
+    tutDots.forEach((d, i)=> d.classList.toggle('on', i === tutIndex));
+    tutBack.style.visibility = tutIndex === 0 ? 'hidden' : 'visible';
+    tutNext.textContent = tutIndex === TUTORIAL_STEPS.length - 1 ? "LET'S PLAY!" : 'NEXT';
+  }
+  function openTutorial(){ tutIndex = 0; renderTutorial(); tutorialOverlay.classList.remove('hidden'); }
+  tutNext.addEventListener('click', ()=>{
+    if (tutIndex === TUTORIAL_STEPS.length - 1) { tutorialOverlay.classList.add('hidden'); startGame(); }
+    else { tutIndex++; renderTutorial(); }
+  });
+  tutBack.addEventListener('click', ()=>{ if (tutIndex > 0) { tutIndex--; renderTutorial(); } });
+  tutorialOverlay.addEventListener('click', (e)=>{ if (e.target === tutorialOverlay) tutorialOverlay.classList.add('hidden'); });
+  document.getElementById('howBtn').addEventListener('click', openTutorial);
+
+  // ---------- Easier input: swipe / drag the falling piece ----------
+  let dragX = null;
+  field.addEventListener('pointerdown', (e)=>{
+    if (!state || !state.activeItem) return;
+    dragX = e.clientX;
+    try { field.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  field.addEventListener('pointermove', (e)=>{
+    if (dragX == null || !state || !state.activeItem) return;
+    const dx = e.clientX - dragX;
+    const laneW = fieldWidth() / 4;
+    if (Math.abs(dx) > laneW * 0.4) {
+      moveActive(dx > 0 ? 1 : -1);
+      dragX = e.clientX;
+    }
+  });
+  function endDrag(e){
+    if (dragX == null) return;
+    // Fast downward flick = drop. Tap on the piece = rotate (much easier on phones).
+    if (e && typeof e.clientY === 'number' && state && state.activeItem) {
+      const rect = state.activeItem.el.getBoundingClientRect();
+      const tappedPiece = e.clientX >= rect.left - 12 && e.clientX <= rect.right + 12 &&
+        e.clientY >= rect.top - 12 && e.clientY <= rect.bottom + 12;
+      if (tappedPiece && Math.abs(e.clientX - dragX) < 12) rotateActive();
+    }
+    dragX = null;
+  }
+  field.addEventListener('pointerup', endDrag);
+  field.addEventListener('pointercancel', ()=>{ dragX = null; });
 
   bins.forEach(bin => {
     bin.addEventListener('click', () => {
@@ -813,11 +992,16 @@
   });
 
   window.addEventListener('keydown', (e) => {
+    if (tutorialOverlay && !tutorialOverlay.classList.contains('hidden')) {
+      if (e.key === 'Escape') tutorialOverlay.classList.add('hidden');
+      if (e.key === 'Enter') tutNext.click();
+      return;
+    }
     if (!state || !state.running) return;
-    if (e.key === 'ArrowLeft') moveActive(-1);
-    else if (e.key === 'ArrowRight') moveActive(1);
-    else if (e.key === 'ArrowUp') rotateActive();
-    else if (e.key === ' ' || e.key === 'ArrowDown') { dropActive(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveActive(-1);
+    else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveActive(1);
+    else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'r' || e.key === 'R') rotateActive();
+    else if (e.key === ' ' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S' || e.key === 'Enter') { dropActive(); e.preventDefault(); }
   });
 
   resetState();
