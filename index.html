@@ -441,10 +441,30 @@
   .bin.flash-good { filter: brightness(1.2) saturate(1.45); transform: translateY(-3px); }
 
   #creek { height: 54px; margin: 7px 8px 0; border: 2px solid rgba(24,49,74,.14); border-radius: 16px 16px 8px 8px; box-shadow: inset 0 4px rgba(255,255,255,.18); }
-  #creek::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 13px, rgba(255,255,255,.22) 14px 17px, transparent 18px 31px); background-size: 44px 44px; opacity: .9; animation: creekFlow 2.6s linear infinite; }
-  @keyframes creekFlow { from { background-position: 0 0; } to { background-position: 44px 0; } }
+  #creek::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(255,255,255,.20) 10px 14px, transparent 14px 26px); background-size: 40px 100%; opacity: .9; animation: creekFlow 2.2s linear infinite; }
+  @keyframes creekFlow { from { background-position: 0 0; } to { background-position: 40px 0; } }
+  #creekBubbles { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: .55;
+    background-image: radial-gradient(circle, rgba(255,255,255,.9) 0 2px, transparent 3px), radial-gradient(circle, rgba(255,255,255,.7) 0 1.5px, transparent 2.5px);
+    background-size: 46px 30px, 30px 22px; background-position: 0 0, 12px 8px;
+    animation: bubbleRise 2.8s linear infinite;
+  }
+  @keyframes bubbleRise { from { background-position: 0 12px, 12px 18px; } to { background-position: 0 -18px, 12px -14px; } }
+  #creekFish { position: absolute; top: 50%; left: -70px; width: 34px; height: 20px; z-index: 1; pointer-events: none;
+    background: #ff9d5c; border-radius: 50% 60% 60% 50%;
+    animation: fishSwim 9s linear infinite;
+  }
+  #creekFish::before { content: ''; position: absolute; right: -9px; top: 2px; border-left: 11px solid #ff9d5c; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  #creekFish::after { content: ''; position: absolute; left: 7px; top: 6px; width: 4px; height: 4px; border-radius: 50%; background: #18314a; }
+  @keyframes fishSwim {
+    0% { left: -70px; transform: translateY(-50%); }
+    25% { transform: translateY(calc(-50% - 5px)); }
+    50% { transform: translateY(-50%); }
+    75% { transform: translateY(calc(-50% + 5px)); }
+    100% { left: 110%; transform: translateY(-50%); }
+  }
   #creek-label { letter-spacing: .12em; font-size: .6rem; }
-  .muck { background: linear-gradient(180deg, rgba(119,83,48,.78), var(--creek-dirty)); }
+  .muck { background: repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 12px, transparent 12px 24px), linear-gradient(180deg, rgba(119,83,48,.78), var(--creek-dirty)); background-size: 36px 100%, cover; animation: muckSwirl 5s linear infinite; }
+  @keyframes muckSwirl { from { background-position: 0 0, 0 0; } to { background-position: -36px 0, 0 0; } }
   #controls { gap: 10px; padding: 10px 14px calc(13px + env(safe-area-inset-bottom, 0px)); }
   .ctrl-btn { min-width: 64px; color: #24475d; background: var(--paper); border: 2px solid rgba(24,49,74,.1); border-radius: 15px; box-shadow: 0 4px 0 rgba(24,49,74,.17); }
   #endStats { border: 2px solid rgba(24,49,74,.1); border-radius: 20px; box-shadow: 0 5px 0 rgba(24,49,74,.16); }
@@ -522,6 +542,24 @@
     pointer-events: none; z-index: 2; transform: translateX(-50%); transition: left .12s ease;
   }
   #dropGhost.ready { background: rgba(82,198,107,.5); border-color: #287d45; border-style: solid; }
+  #fitGhost {
+    position: absolute; width: 74px; height: 78px; border-radius: 20px;
+    border: 3px dashed rgba(255,255,255,.9); background: rgba(82,198,107,.18);
+    box-shadow: 0 0 0 3px rgba(82,198,107,.45), 0 0 18px rgba(82,198,107,.5);
+    pointer-events: none; z-index: 2; opacity: 0; transition: opacity .15s ease;
+  }
+  #fitGhost::after {
+    content: 'TARGET'; position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+    font-family: 'Bungee', cursive; font-size: .55rem; color: #fff; letter-spacing: .08em;
+    background: #287d45; border-radius: 6px; padding: 1px 7px; white-space: nowrap;
+  }
+  .orient-tick {
+    position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; pointer-events: none;
+    border-left: 8px solid transparent; border-right: 8px solid transparent;
+    border-top: 11px solid #ec5a3b;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,.8));
+  }
   .bin.hint-good { outline: 4px solid #52c66b; outline-offset: 2px; transform: translateY(-3px); }
   .bin.hint-wrong { outline: 4px solid rgba(217,69,69,.75); outline-offset: 2px; }
   .item.fitted { animation: fitPulse .8s ease-in-out infinite; }
@@ -578,7 +616,7 @@
     #app.shake { animation: none; }
     #app::before { animation: none; }
     #creek::after { animation: none; display: none; }
-    #creek::before { animation: none; }
+    #creek::before, #creekBubbles, #creekFish, .muck { animation: none; }
     .scene-sun::before, .scene-cloud, .scene-birds, .scene-reeds, .scene-motes { animation: none; }
     .confetti-bit { animation-duration: .01s; }
   }
@@ -622,6 +660,7 @@
         <div class="scene-mountains"></div><div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-cloud two"></div><div class="scene-birds"></div><div class="scene-pines"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div><div class="scene-motes"></div>
       </div>
       <div id="laneGuide" aria-hidden="true"></div>
+      <div id="fitGhost" aria-hidden="true"></div>
       <div id="dropGhost" aria-hidden="true"></div>
     </div>
     <div id="binsRow">
@@ -630,7 +669,7 @@
       <button class="bin compost" data-bin="compost" aria-label="Drop in compost"><img class="bin-mark" src="assets/bins/compost.png" alt="">Compost</button>
       <button class="bin electronic" data-bin="electronic" aria-label="Drop in electronic waste"><img class="bin-mark" src="assets/bins/electronic.png" alt="">E-Waste</button>
     </div>
-    <div id="creek"><div class="muck" id="muck"></div><span id="creek-label">THE CREEK</span></div>
+    <div id="creek"><div class="muck" id="muck"></div><div id="creekBubbles" aria-hidden="true"></div><div id="creekFish" aria-hidden="true"></div><span id="creek-label">THE CREEK</span></div>
     <div id="controls">
       <button class="ctrl-btn" id="btnLeft" aria-label="Move left">◀</button>
       <button class="ctrl-btn" id="btnRotate" aria-label="Rotate item to fit">⟳</button>
@@ -716,6 +755,8 @@
   const pauseOverlay = document.getElementById('pauseOverlay');
   let laneGuide = document.getElementById('laneGuide');
   let dropGhost = document.getElementById('dropGhost');
+  let fitGhost = document.getElementById('fitGhost');
+  const creekFish = document.getElementById('creekFish');
   const timeBar = document.getElementById('timeBar');
   const binsRow = document.getElementById('binsRow');
   const app = document.getElementById('app');
@@ -924,7 +965,7 @@
     const el = document.createElement('div');
     el.className = 'item active';
     el.classList.add('shape-' + shapeFor(def.type));
-    el.innerHTML = itemArtwork(def.type) + '<div class="item-label">'+def.label+'</div>';
+    el.innerHTML = '<div class="orient-tick" aria-hidden="true"></div>' + itemArtwork(def.type) + '<div class="item-label">'+def.label+'</div>';
     field.appendChild(el);
 
     // deactivate previous active item visually
@@ -941,6 +982,7 @@
       fitRotation,
       landed: false,
       dropping: false,
+      labelEl: el.querySelector('.item-label'),
     };
     state.items.push(itemObj);
     state.activeItem = itemObj;
@@ -948,14 +990,28 @@
     positionItem(itemObj);
   }
 
+  function updateFitGhost(item){
+    if (!item || !state.running || item.fitRotation === 0 || item.rotation % 360 === item.fitRotation) {
+      fitGhost.style.opacity = '0';
+      return;
+    }
+    fitGhost.style.opacity = '1';
+    fitGhost.style.left = (laneCenterX(item.lane) - ITEM_SIZE / 2) + 'px';
+    fitGhost.style.top = item.y + 'px';
+    fitGhost.style.transform = 'rotate(' + item.fitRotation + 'deg)';
+  }
+
   function positionItem(item){
     const x = laneCenterX(item.lane) - ITEM_SIZE / 2;
     item.el.style.left = x + 'px';
     item.el.style.top = item.y + 'px';
     item.el.style.transform = 'rotate(' + item.rotation + 'deg)';
+    // Keep the name readable while the shape itself turns.
+    if (item.labelEl) item.labelEl.style.transform = 'rotate(' + (-item.rotation) + 'deg)';
     if (state.activeItem === item) {
       updateLandingPreview(item);
       updateBinHints(item);
+      updateFitGhost(item);
     }
   }
 
@@ -1027,7 +1083,7 @@
 
   function landItem(item, correct, missText = 'MISS'){
     item.landed = true;
-    if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); updateLandingPreview(null); updateBinHints(null); }
+    if (state.activeItem === item) { state.activeItem = null; updateFitGuide(null); updateLandingPreview(null); updateBinHints(null); updateFitGhost(null); }
     flashBin(LANES[item.lane], correct);
     state.sortedCount++;
     if (correct) {
@@ -1071,6 +1127,8 @@
     const g = Math.round(166 + (86-166)*t);
     const b = Math.round(185 + (54-185)*t);
     document.getElementById('creek').style.background = 'rgb('+r+','+g+','+b+')';
+    // The fish only swims while the water is clean enough.
+    if (creekFish) creekFish.classList.toggle('hidden', state.misses > 1);
   }
 
   function updateHud(){
@@ -1158,8 +1216,11 @@
     // innerHTML reset replaces the guide nodes, so re-grab them.
     laneGuide = document.getElementById('laneGuide');
     dropGhost = document.getElementById('dropGhost');
+    fitGhost = document.getElementById('fitGhost');
+    updateFitGhost(null);
     muck.style.height = '0%';
     document.getElementById('creek').style.background = 'var(--creek-clean)';
+    if (creekFish) creekFish.classList.remove('hidden');
     comboBadge.style.opacity = '0';
     fitGuide.classList.add('hidden');
     fitGuide.classList.remove('ready');
@@ -1184,6 +1245,7 @@
     coachHint.classList.add('hidden');
     updateLandingPreview(null);
     updateBinHints(null);
+    updateFitGhost(null);
     gameScreen.classList.add('hidden');
     document.getElementById('endTitle').textContent = won ? 'CREEK SAVED!' : 'CREEK POLLUTED';
     document.getElementById('endSubtitle').textContent = won
@@ -1255,7 +1317,7 @@
   // ---------- Tutorial (3 quick steps, skippable) ----------
   const TUTORIAL_STEPS = [
     { title: 'Move it', art: '◀ 📦 ▶', text: 'Trash falls from the sky. Move it with <span class="coach-key">◀</span> <span class="coach-key">▶</span>, the arrow keys, or by dragging it. You only ever control ONE piece!' },
-    { title: 'Fit it', art: '⟳ ✅', text: 'Some pieces need a spin. Tap <span class="coach-key">⟳</span> until the piece glows GREEN and says FIT READY. No green = no points!' },
+    { title: 'Fit it', art: '⟳ ✅', text: 'Some pieces show a dashed TARGET outline. Tap <span class="coach-key">⟳</span> to turn the piece — the red arrow on top shows which way is up — until it matches the outline and glows GREEN!' },
     { title: 'Sort it', art: '♻️ 🌱', text: 'Drop it in the matching bin: tap the bin, press <span class="coach-key">DROP ⬇</span> or SPACE. Right bin + right fit = points. 8 misses pollutes the creek!' },
   ];
   let tutIndex = 0;
