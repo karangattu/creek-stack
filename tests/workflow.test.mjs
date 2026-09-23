@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 let workflow = '';
 try {
-  workflow = await readFile(new URL('./.github/workflows/test.yml', import.meta.url), 'utf8');
+  workflow = await readFile(new URL('../.github/workflows/test.yml', import.meta.url), 'utf8');
 } catch (error) {
   assert.equal(error?.code, 'ENOENT', 'reading the workflow should not fail unexpectedly');
 }

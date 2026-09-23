@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const page = await readFile(new URL('./index.html', import.meta.url), 'utf8');
+const page = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 assert.match(page, /class="game-scene"/, 'the play area should include a layered creek scene');
 assert.match(page, /class="bin-mark"/, 'bins should use custom vector marks instead of emoji');

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const page = await readFile(new URL('./index.html', import.meta.url), 'utf8');
+const page = await readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 assert.match(page, /function difficultyFor\(elapsed\)/, 'the game needs staged difficulty');
 assert.match(page, /if \(elapsed < 15\) return/, 'the opening should be an easy warm-up');
