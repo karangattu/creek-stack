@@ -621,6 +621,26 @@
     .confetti-bit { animation-duration: .01s; }
   }
   @media (min-width: 600px) { #app { height: min(94vh, 880px); border-radius: 30px; box-shadow: 0 20px 70px rgba(24,49,74,.27); border: 8px solid rgba(255,255,255,.7); } }
+  /* Final scene pass: quiet sky, larger mission piece, and a creek worth saving. */
+  #app::before, .scene-motes { display: none; }
+  #missionBanner { margin:4px 14px 8px; min-height:38px; align-self:stretch; display:flex; align-items:center; justify-content:center; background:#18314a; color:#fff; border:2px solid rgba(255,255,255,.75); border-radius:13px; box-shadow:0 4px 0 rgba(24,49,74,.2); font-weight:900; letter-spacing:.06em; font-size:.86rem; text-transform:uppercase; }
+  #missionBanner strong { color:#ffdc66; margin-left:5px; }
+  .item { width:106px; height:110px; border:3px solid #18314a; background:#fffdf5; box-shadow:0 8px 0 rgba(24,49,74,.24),0 14px 18px rgba(24,49,74,.15); padding:5px; align-items:center; justify-content:center; }
+  .item-art { width:88px; height:88px; }
+  .item-label { display:none; }
+  .item.active { box-shadow:0 0 0 4px #ffca48,0 8px 0 rgba(24,49,74,.24),0 14px 18px rgba(24,49,74,.15); }
+  #fitGhost { width:106px; height:110px; border-radius:20px; }
+  .bin { transition:transform .12s ease,filter .15s ease,box-shadow .12s ease; }
+  .bin.selected { transform:scale(1.08) translateY(-4px); outline:3px solid #fff; outline-offset:2px; z-index:5; }
+  #laneGuide { background:linear-gradient(180deg,color-mix(in srgb,var(--lane-color,#ffdc66) 32%,transparent),color-mix(in srgb,var(--lane-color,#ffdc66) 14%,transparent)); border:0; box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--lane-color,#ffdc66) 72%,white); }
+  #creek { height:104px; flex:none; margin-top:8px; border:4px solid #397b63; background:linear-gradient(180deg,#55c8cf,#268eae); border-radius:24px 24px 12px 12px; box-shadow:inset 0 7px rgba(255,255,255,.28),0 5px 0 rgba(24,49,74,.12); }
+  #creek-label { font-size:.78rem; letter-spacing:.16em; text-shadow:0 2px 3px rgba(24,49,74,.7); }
+  #creek.sparkle { animation:creekPop .55s ease; }
+  @keyframes creekPop { 50% { filter:brightness(1.3); transform:scaleY(1.06); } }
+  .success-spark { position:absolute; width:8px; height:8px; border-radius:50%; z-index:8; pointer-events:none; background:var(--spark,#ffdc66); box-shadow:0 0 10px var(--spark,#ffdc66); animation:sparkFly .65s ease-out forwards; }
+  @keyframes sparkFly { to { transform:translate(var(--dx),-52px) scale(.2); opacity:0; } }
+  #btnDrop { background:#32834c; box-shadow:0 4px 0 #1e5834; }
+  @media (max-height:700px) { #creek { height:78px; } .item { width:92px; height:96px; } .item-art { width:78px; height:78px; } }
 </style>
 </head>
 <body>
@@ -655,6 +675,7 @@
     <div id="comboBadge">Combo x1</div>
     <div id="fitGuide" class="hidden" aria-live="polite"></div>
     <div id="coachHint" class="hidden" aria-live="polite"></div>
+    <div id="missionBanner">SORT THIS:<strong id="missionName">READY</strong></div>
     <div id="field">
       <div class="game-scene" aria-hidden="true">
         <div class="scene-mountains"></div><div class="scene-sun"></div><div class="scene-cloud"></div><div class="scene-cloud two"></div><div class="scene-birds"></div><div class="scene-pines"></div><div class="scene-hills"></div><div class="scene-reeds"></div><div class="scene-pebbles"></div><div class="scene-motes"></div>
@@ -764,7 +785,7 @@
 
   const GAME_LENGTH = 60; // seconds
   const MAX_MISSES = 8;
-  const ITEM_SIZE = 74;
+  const ITEM_SIZE = 106;
   // Slow the piece down near the bins so players get extra reaction time.
   const LANDING_SLOW_ZONE = 110;
   const LANDING_SLOW_FACTOR = 0.55;
@@ -912,12 +933,15 @@
     if (!item || !state.running) {
       laneGuide.style.opacity = '0';
       dropGhost.style.opacity = '0';
+      bins.forEach(bin => bin.classList.remove('selected'));
       return;
     }
     const laneW = fieldWidth() / 4;
     laneGuide.style.opacity = '1';
     laneGuide.style.left = (laneW * item.lane) + 'px';
     laneGuide.style.width = laneW + 'px';
+    laneGuide.style.setProperty('--lane-color', getComputedStyle(bins[item.lane]).backgroundColor);
+    bins.forEach((bin, index) => bin.classList.toggle('selected', index === item.lane));
     const fitted = item.rotation % 360 === item.fitRotation;
     const matchesBin = LANES[item.lane] === item.def.bin;
     dropGhost.style.opacity = '1';
@@ -965,7 +989,8 @@
     const el = document.createElement('div');
     el.className = 'item active';
     el.classList.add('shape-' + shapeFor(def.type));
-    el.innerHTML = '<div class="orient-tick" aria-hidden="true"></div>' + itemArtwork(def.type) + '<div class="item-label">'+def.label+'</div>';
+    el.innerHTML = '<div class="orient-tick" aria-hidden="true"></div>' + itemArtwork(def.type);
+    document.getElementById('missionName').textContent = def.label;
     field.appendChild(el);
 
     // deactivate previous active item visually
@@ -1087,6 +1112,7 @@
     flashBin(LANES[item.lane], correct);
     state.sortedCount++;
     if (correct) {
+      if (state.misses > 0) { state.misses--; updateCreek(); }
       state.combo++;
       const mult = state.combo >= 8 ? 2 : (state.combo >= 3 ? 1.5 : 1);
       const pts = Math.round(10 * mult);
@@ -1096,6 +1122,15 @@
       comboBadge.style.opacity = state.combo >= 3 ? '1' : '0';
       sfx('good');
       buzz(20);
+      const creek = document.getElementById('creek');
+      creek.classList.remove('sparkle'); void creek.offsetWidth; creek.classList.add('sparkle');
+      const colors = ['#ffdc66','#fff','#52c66b','#53c9e2'];
+      for (let i=0;i<10;i++) {
+        const p=document.createElement('i'); p.className='success-spark';
+        p.style.left=(laneCenterX(item.lane)+(Math.random()*36-18))+'px';
+        p.style.top=(fieldHeight()-18)+'px'; p.style.setProperty('--dx',(Math.random()*90-45)+'px');
+        p.style.setProperty('--spark',colors[i%colors.length]); field.appendChild(p); setTimeout(()=>p.remove(),700);
+      }
     } else {
       state.combo = 0;
       comboBadge.style.opacity = '0';
@@ -1129,6 +1164,7 @@
     document.getElementById('creek').style.background = 'rgb('+r+','+g+','+b+')';
     // The fish only swims while the water is clean enough.
     if (creekFish) creekFish.classList.toggle('hidden', state.misses > 1);
+    if (creekFish) creekFish.style.opacity = Math.max(.15, 1 - state.misses / MAX_MISSES);
   }
 
   function updateHud(){
