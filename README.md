@@ -6,7 +6,7 @@ A fast, kid-friendly browser sorting game. Trash falls from the sky and you stee
 each piece into the right bin — Landfill, Recycling, Compost, or E-Waste — before
 it pollutes the creek. Later pieces must also be rotated until they glow green to
 fit. Sort correctly to score and build combos; 8 misses pollutes the creek and
-ends the run, or survive the 60-second timer to save it.
+ends the run, or survive the 90-second timer to save it.
 
 ## How to play
 
