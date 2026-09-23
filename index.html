@@ -764,6 +764,14 @@
 (function(){
   const LANES = ['landfill','recycling','compost','electronic'];
   const ITEMS = [
+    { type:'foil-tray', label:'Aluminum Foil Tray', bin:'recycling' },
+    { type:'plastic-bottle', label:'Plastic Bottle', bin:'recycling' },
+    { type:'lettuce', label:'Lettuce Leaves', bin:'compost' },
+    { type:'orange-peel', label:'Orange Peel', bin:'compost' },
+    { type:'ceramic-mug', label:'Broken Mug', bin:'landfill' },
+    { type:'earbuds', label:'Old Earbuds', bin:'electronic' },
+    { type:'computer-mouse', label:'Old Computer Mouse', bin:'electronic' },
+    { type:'toy-car', label:'Broken Toy Car', bin:'electronic' },
     { type:'banana', label:'Banana Peel', bin:'compost' },
     { type:'apple', label:'Apple Core', bin:'compost' },
     { type:'eggshell', label:'Eggshells', bin:'compost' },
@@ -808,9 +816,9 @@
   const GAME_LENGTH = 90; // seconds
   const MAX_MISSES = 8;
   const ITEM_SIZE = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--item-size')) || 106;
-  // Slow the piece down near the bins so players get extra reaction time.
+  // Keep a small landing cushion without undoing the faster fall pace.
   const LANDING_SLOW_ZONE = 110;
-  const LANDING_SLOW_FACTOR = 0.55;
+  const LANDING_SLOW_FACTOR = 0.82;
   const REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- Tiny sound engine (no assets, mutable, gesture-safe) ----------
@@ -885,9 +893,9 @@
   }
 
   function difficultyFor(elapsed){
-    if (elapsed < 15) return { speed: 34, spawnInterval: 4.6, rotationChance: 0 };
-    if (elapsed < 35) return { speed: 44, spawnInterval: 3.6, rotationChance: 0.3 };
-    return { speed: Math.min(66, 54 + (elapsed - 35) * 0.5), spawnInterval: Math.max(2.0, 3.0 - (elapsed - 35) * 0.03), rotationChance: 0.55 };
+    if (elapsed < 15) return { speed: 92, spawnInterval: 4.6, rotationChance: 0 };
+    if (elapsed < 35) return { speed: 126, spawnInterval: 3.6, rotationChance: 0.3 };
+    return { speed: Math.min(220, 150 + (elapsed - 35) * 1.4), spawnInterval: Math.max(2.0, 3.0 - (elapsed - 35) * 0.03), rotationChance: 0.55 };
   }
 
   function fitRotationFor(elapsed){
@@ -897,9 +905,9 @@
   }
 
   function shapeFor(type){
-    if (['can', 'battery', 'phone', 'cup'].includes(type)) return 'capsule';
-    if (['box', 'paper', 'pizza', 'wrapper'].includes(type)) return 'notch';
-    if (['banana', 'cable', 'bandage', 'eggshell'].includes(type)) return 'diamond';
+    if (['can', 'battery', 'phone', 'cup', 'plastic-bottle', 'ceramic-mug'].includes(type)) return 'capsule';
+    if (['box', 'paper', 'pizza', 'wrapper', 'foil-tray', 'toy-car'].includes(type)) return 'notch';
+    if (['banana', 'cable', 'bandage', 'eggshell', 'lettuce', 'orange-peel', 'earbuds'].includes(type)) return 'diamond';
     return 'square';
   }
 
