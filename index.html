@@ -635,6 +635,9 @@
   #laneGuide { background:linear-gradient(180deg,color-mix(in srgb,var(--lane-color,#ffdc66) 32%,transparent),color-mix(in srgb,var(--lane-color,#ffdc66) 14%,transparent)); border:0; box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--lane-color,#ffdc66) 72%,white); }
   #creek { height:104px; flex:none; margin-top:8px; border:4px solid #397b63; background:linear-gradient(180deg,#55c8cf,#268eae); border-radius:24px 24px 12px 12px; box-shadow:inset 0 7px rgba(255,255,255,.28),0 5px 0 rgba(24,49,74,.12); }
   #creek-label { font-size:.78rem; letter-spacing:.16em; text-shadow:0 2px 3px rgba(24,49,74,.7); }
+  #creekFish { width:38px; height:23px; border:2px solid #18314a; border-radius:58% 48% 48% 58%; background:linear-gradient(145deg,#ffd477 0 30%,#ff9d5c 31% 100%); box-shadow:inset 0 -4px rgba(183,81,48,.22); }
+  #creekFish::before { right:auto; left:-12px; top:3px; border-left:0; border-right:13px solid #ff9d5c; border-top:8px solid transparent; border-bottom:8px solid transparent; filter:drop-shadow(-1px 0 #18314a); }
+  #creekFish::after { left:auto; right:8px; top:5px; width:5px; height:5px; border:1px solid white; background:#18314a; box-shadow:0 0 0 1px rgba(24,49,74,.2); }
   #creek.sparkle { animation:creekPop .55s ease; }
   @keyframes creekPop { 50% { filter:brightness(1.3); transform:scaleY(1.06); } }
   .success-spark { position:absolute; width:8px; height:8px; border-radius:50%; z-index:8; pointer-events:none; background:var(--spark,#ffdc66); box-shadow:0 0 10px var(--spark,#ffdc66); animation:sparkFly .65s ease-out forwards; }
