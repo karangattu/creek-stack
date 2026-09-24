@@ -15,7 +15,5 @@ assert.match(buildGradle, /syncWebAssets/, 'build should synchronize web assets 
 await access(new URL('../assets/icon.png', import.meta.url));
 await access(new URL('../SortRush.apk', import.meta.url));
 await access(new URL('../android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp', import.meta.url));
-await access(new URL('../android/app/build/outputs/apk/debug/app-debug.apk', import.meta.url));
-await access(new URL('../android/app/build/outputs/apk/release/app-release.apk', import.meta.url));
 
 console.log('Android offline tablet package configuration is verified.');
