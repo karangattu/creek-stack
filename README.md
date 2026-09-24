@@ -25,8 +25,11 @@ python3 -m http.server --directory .
 
 Then visit `http://localhost:8000`.
 
-## Tests
+## Android APK
 
 ```sh
-node --test bin-sprites.test.mjs contrast.test.mjs raster-sprites.test.mjs rotation-gameplay.test.mjs sort-rush.design.test.mjs workflow.test.mjs
+cd android && ./gradlew assembleDebug
 ```
+
+Output is at `android/app/build/outputs/apk/debug/app-debug.apk` or `SortRush.apk`.
+
